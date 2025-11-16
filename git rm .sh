@@ -1,0 +1,1 @@
+git rm .git-credentials && git commit -m "Remove exposed credentials"
