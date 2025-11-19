@@ -1,0 +1,121 @@
+name: Claude AI Integration
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened, edited, closed]
+  pull_request:
+    types: [opened, edited, closed]
+
+jobs:
+  call-claude:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Obter conteúdo do evento
+        id: get-content
+        run: |
+          echo "EVENT_TYPE=${{ github.event_name }}" >> $GITHUB_ENV
+
+          if [ "${{ github.event_name }}" == "issues" ]; then
+            echo "EVENT_TITLE=${{ github.event.issue.title }}" >> $GITHUB_ENV
+            echo "EVENT_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
+            echo "EVENT_ACTION=${{ github.event.action }}" >> $GITHUB_ENV
+            # Escapa aspas e quebras de linha no body
+            BODY=$(echo '${{ github.event.issue.body }}' | jq -Rs .)
+            echo "EVENT_BODY=$BODY" >> $GITHUB_ENV
+          else
+            echo "EVENT_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+            echo "EVENT_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+            echo "EVENT_ACTION=${{ github.event.action }}" >> $GITHUB_ENV
+            BODY=$(echo '${{ github.event.pull_request.body }}' | jq -Rs .)
+            echo "EVENT_BODY=$BODY" >> $GITHUB_ENV
+          fi
+
+      - name: Chamar Claude AI
+        id: claude-response
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Remove aspas extras do EVENT_BODY se existirem
+          CLEAN_BODY=$(echo "$EVENT_BODY" | sed 's/^"//;s/"$//')
+
+          # Cria o payload JSON (usando modelo mais acessível)
+          PAYLOAD=$(jq -n \
+            --arg model "claude-3-5-sonnet-20240620" \
+            --arg content "Você é um assistente do GitHub. Analise este evento:\n\nTipo: ${{ env.EVENT_TYPE }}\nAção: ${{ env.EVENT_ACTION }}\nTítulo: ${{ env.EVENT_TITLE }}\nConteúdo: ${CLEAN_BODY}\n\nForneça uma análise útil e sugestões em português." \
+            '{
+              model: $model,
+              max_tokens: 2048,
+              messages: [
+                {
+                  role: "user",
+                  content: $content
+                }
+              ]
+            }')
+
+          echo "Chamando API da Anthropic..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Status HTTP: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            ERROR_MSG=$(echo "$BODY" | jq -r '.error.message // "Erro desconhecido na API"')
+            echo "CLAUDE_RESPONSE<<EOF" >> $GITHUB_ENV
+            echo "❌ Erro na API (HTTP $HTTP_CODE): $ERROR_MSG" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "CLAUDE_RESPONSE<<EOF" >> $GITHUB_ENV
+            echo "$BODY" | jq -r '.content[0].text // "Erro ao processar resposta"' >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          fi
+
+      - name: Postar comentário com resposta do Claude
+        if: env.EVENT_NUMBER != ''
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = process.env.CLAUDE_RESPONSE;
+            const eventType = process.env.EVENT_TYPE;
+            const eventNumber = process.env.EVENT_NUMBER;
+
+            const body = `## 🤖 Análise do Claude AI\n\n${response}\n\n---\n*Gerado automaticamente pelo Claude AI*`;
+
+            if (eventType === 'issues') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: eventNumber,
+                body: body
+              });
+            } else {
+              await github.rest.pulls.createReviewComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: eventNumber,
+                body: body,
+                commit_id: context.payload.pull_request.head.sha,
+                path: 'README.md',
+                position: 1
+              }).catch(() => {
+                // Se falhar, tenta como comentário normal
+                return github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: eventNumber,
+                  body: body
+                });
+              });
+            }

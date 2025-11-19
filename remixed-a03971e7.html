@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fretes Disponíveis - Faça Sua Proposta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: #FFFFFF;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 30px rgba(255, 215, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #FFD700;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            display: block;
+            font-size: 0.4em;
+            color: #FFFFFF;
+            font-weight: 400;
+            letter-spacing: 3px;
+            margin-top: 0.2em;
+            text-shadow: none;
+            -webkit-text-fill-color: #FFFFFF;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 215, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: #00FF00;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #cccccc;
+            margin-top: 0.5rem;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+            color: white;
+            text-align: center;
+            padding: 1.2rem;
+            font-size: 1.3em;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse 2s infinite;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Saudação */
+        .saudacao {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%);
+            border: 2px solid #00FF00;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .saudacao h2 {
+            font-size: 2em;
+            color: #00FF00;
+            margin-bottom: 0.5rem;
+        }
+
+        .saudacao p {
+            font-size: 1.2em;
+            color: #cccccc;
+        }
+
+        /* Seção Rotas Preferidas */
+        .secao-rotas {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.95) 100%);
+            border: 3px solid #FF0000;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icone-destaque {
+            font-size: 5em;
+            text-align: center;
+            animation: bounce 2s infinite;
+            margin-bottom: 1rem;
+        }
+
+        .titulo-rotas {
+            font-size: 3em;
+            font-weight: 900;
+            color: #FF6B6B;
+            text-align: center;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .subtitulo-rotas {
+            font-size: 1.6em;
+            color: #00FF00;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        /* Grid Benefícios Rotas */
+        .grid-beneficios-rotas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card-beneficio-rota {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00FF00;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .card-beneficio-rota:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(0, 255, 0, 0.4);
+        }
+
+        .icone-beneficio-rota {
+            font-size: 3em;
+            margin-bottom: 1rem;
+        }
+
+        .titulo-beneficio-rota {
+            font-size: 1.4em;
+            color: #00FF00;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .desc-beneficio-rota {
+            color: #cccccc;
+            font-size: 1.1em;
+        }
+
+        /* CTA Rotas */
+        .cta-rotas {
+            background: linear-gradient(135deg, #00FF00 0%, #00CC00 100%);
+            color: #000000;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            animation: pulse-slow 2s infinite;
+            cursor: pointer;
+        }
+
+        .cta-rotas h3 {
+            font-size: 1.8em;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-rotas p {
+            font-size: 1.1em;
+        }
+
+        /* Formulário Rotas */
+        .form-rotas {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .grid-form-rota {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto;
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #FFD700;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group select,
+        .form-group input {
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #00FF00;
+        }
+
+        .seta-rota {
+            font-size: 2em;
+            color: #FFD700;
+            align-self: center;
+        }
+
+        .btn-adicionar-rota {
+            background: linear-gradient(135deg, #00FF00 0%, #00CC00 100%);
+            color: #000000;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-adicionar-rota:hover {
+            transform: scale(1.05);
+        }
+
+        /* Lista Rotas */
+        .lista-rotas {
+            margin-top: 2rem;
+        }
+
+        .rota-item {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00FF00;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rota-texto {
+            color: #00FF00;
+            font-weight: 600;
+        }
+
+        .btn-remover-rota {
+            background: #FF0000;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        /* Seção Fretes */
+        .titulo-secao {
+            font-size: 2.5em;
+            color: #FFD700;
+            text-align: center;
+            margin: 4rem 0 2rem 0;
+            font-weight: 900;
+        }
+
+        /* Grid Fretes */
+        .grid-fretes {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .card-frete {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-frete:hover {
+            border-color: #00FF00;
+            box-shadow: 0 10px 40px rgba(0, 255, 0, 0.3);
+        }
+
+        .card-frete.urgente {
+            border-color: #FF0000;
+            border-width: 3px;
+        }
+
+        .frete-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .frete-rota {
+            font-size: 1.5em;
+            color: #FFD700;
+            font-weight: 900;
+        }
+
+        .badge-urgente {
+            background: #FF0000;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 0.9em;
+            animation: pulse 1.5s infinite;
+        }
+
+        .frete-detalhes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .detalhe-item {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .detalhe-label {
+            color: #cccccc;
+            font-size: 0.85em;
+            margin-bottom: 0.3rem;
+        }
+
+        .detalhe-valor {
+            color: #FFFFFF;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .detalhe-destaque {
+            color: #00FF00;
+            font-size: 1.5em;
+            font-weight: 900;
+        }
+
+        /* Form Proposta */
+        .form-proposta {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .form-proposta-titulo {
+            font-size: 1.3em;
+            color: #00FF00;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .grid-form-proposta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-enviar-proposta {
+            width: 100%;
+            background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%);
+            color: white;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .btn-enviar-proposta:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 2px solid #FFD700;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-form-rota {
+                grid-template-columns: 1fr;
+            }
+
+            .seta-rota {
+                display: none;
+            }
+
+            .titulo-rotas {
+                font-size: 2em;
+            }
+
+            .subtitulo-rotas {
+                font-size: 1.2em;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            ANDERSON ENSIDE LOGISTICS
+            <span>Freight & Cargo Solutions</span>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number">247</div>
+            <div class="stat-label">Fretes Disponíveis</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">R$ 8.500</div>
+            <div class="stat-label">Média Mensal</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">1.834</div>
+            <div class="stat-label">Motoristas Ativos</div>
+        </div>
+    </div>
+
+    <!-- Alert Box -->
+    <div class="alert-box">
+        ⚡ FAÇA SUA PROPOSTA AGORA - FRETES SENDO PREENCHIDOS! ⚡
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Saudação -->
+        <div class="saudacao">
+            <h2>✅ Olá <span id="nomeUsuario"></span>!</h2>
+            <p>Estes são os fretes disponíveis AGORA com valores reais:</p>
+        </div>
+
+        <!-- Seção Rotas Preferidas -->
+        <div class="secao-rotas">
+            <div class="icone-destaque">🎯</div>
+            <h2 class="titulo-rotas">CANSADO DE RODAR VAZIO?</h2>
+            <p class="subtitulo-rotas">
+                Cadastre suas rotas preferidas e NUNCA MAIS<br>
+                perca tempo procurando carga!
+            </p>
+
+            <!-- Grid Benefícios -->
+            <div class="grid-beneficios-rotas">
+                <div class="card-beneficio-rota">
+                    <div class="icone-beneficio-rota">📱</div>
+                    <div class="titulo-beneficio-rota">Notificação Instantânea</div>
+                    <div class="desc-beneficio-rota">Receba PRIMEIRO que todos quando aparecer frete na sua rota</div>
+                </div>
+
+                <div class="card-beneficio-rota">
+                    <div class="icone-beneficio-rota">💰</div>
+                    <div class="titulo-beneficio-rota">Maximize Seus Ganhos</div>
+                    <div class="desc-beneficio-rota">Menos tempo parado = mais dinheiro no bolso</div>
+                </div>
+
+                <div class="card-beneficio-rota">
+                    <div class="icone-beneficio-rota">⚡</div>
+                    <div class="titulo-beneficio-rota">Prioridade Total</div>
+                    <div class="desc-beneficio-rota">Você recebe as melhores ofertas ANTES de todo mundo</div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-rotas">
+                <h3>✅ CADASTRE AGORA E COMECE A RECEBER CARGAS!</h3>
+                <p>É rápido, gratuito e você pode cadastrar até 5 rotas diferentes!</p>
+            </div>
+
+            <!-- Formulário Rotas -->
+            <div class="form-rotas">
+                <div class="grid-form-rota">
+                    <div class="form-group">
+                        <label>Estado Origem</label>
+                        <select id="estadoOrigem">
+                            <option value="">Selecione</option>
+                            <option value="PR">PR - Paraná</option>
+                            <option value="SC">SC - Santa Catarina</option>
+                            <option value="SP">SP - São Paulo</option>
+                            <option value="RJ">RJ - Rio de Janeiro</option>
+                            <option value="MG">MG - Minas Gerais</option>
+                            <option value="RS">RS - Rio Grande do Sul</option>
+                            <option value="ES">ES - Espírito Santo</option>
+                            <option value="BA">BA - Bahia</option>
+                            <option value="GO">GO - Goiás</option>
+                            <option value="MS">MS - Mato Grosso do Sul</option>
+                            <option value="MT">MT - Mato Grosso</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cidade Origem</label>
+                        <input type="text" id="cidadeOrigem" placeholder="Ex: Curitiba">
+                    </div>
+
+                    <div class="seta-rota">→</div>
+
+                    <div class="form-group">
+                        <label>Estado Destino</label>
+                        <select id="estadoDestino">
+                            <option value="">Selecione</option>
+                            <option value="PR">PR - Paraná</option>
+                            <option value="SC">SC - Santa Catarina</option>
+                            <option value="SP">SP - São Paulo</option>
+                            <option value="RJ">RJ - Rio de Janeiro</option>
+                            <option value="MG">MG - Minas Gerais</option>
+                            <option value="RS">RS - Rio Grande do Sul</option>
+                            <option value="ES">ES - Espírito Santo</option>
+                            <option value="BA">BA - Bahia</option>
+                            <option value="GO">GO - Goiás</option>
+                            <option value="MS">MS - Mato Grosso do Sul</option>
+                            <option value="MT">MT - Mato Grosso</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cidade Destino</label>
+                        <input type="text" id="cidadeDestino" placeholder="Ex: São Paulo">
+                    </div>
+                </div>
+
+                <button class="btn-adicionar-rota" onclick="adicionarRota()">
+                    ➕ ADICIONAR ROTA
+                </button>
+
+                <div class="lista-rotas" id="listaRotas"></div>
+            </div>
+        </div>
+
+        <!-- Título Fretes -->
+        <h2 class="titulo-secao">💼 FRETES DISPONÍVEIS - FAÇA SUA PROPOSTA</h2>
+
+        <!-- Grid Fretes -->
+        <div class="grid-fretes" id="gridFretes"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>ANDERSON ENSIDE LOGISTICS - Freight & Cargo Solutions</strong></p>
+        <p>✨ 30+ Anos Conectando o Brasil ✨</p>
+    </div>
+
+    <script>
+        // URL do Google Apps Script (CONFIGURAR)
+        const GOOGLE_SCRIPT_URL = 'COLE_SUA_URL_AQUI';
+
+        // Carregar dados do lead
+        const leadData = JSON.parse(localStorage.getItem('leadData') || '{}');
+        if (!leadData.nome) {
+            alert('❌ Você precisa preencher seus dados primeiro!');
+            window.location.href = 'SISTEMA-PRONTO.html';
+        }
+        document.getElementById('nomeUsuario').textContent = leadData.nome;
+
+        // Rotas Preferidas
+        let rotasPreferidas = [];
+
+        function adicionarRota() {
+            if (rotasPreferidas.length >= 5) {
+                alert('❌ Você já cadastrou 5 rotas (máximo permitido)');
+                return;
+            }
+
+            const estadoOrigem = document.getElementById('estadoOrigem').value;
+            const cidadeOrigem = document.getElementById('cidadeOrigem').value.trim();
+            const estadoDestino = document.getElementById('estadoDestino').value;
+            const cidadeDestino = document.getElementById('cidadeDestino').value.trim();
+
+            if (!estadoOrigem || !cidadeOrigem || !estadoDestino || !cidadeDestino) {
+                alert('❌ Preencha todos os campos da rota');
+                return;
+            }
+
+            const rota = `${cidadeOrigem} - ${estadoOrigem} → ${cidadeDestino} - ${estadoDestino}`;
+            
+            if (rotasPreferidas.includes(rota)) {
+                alert('⚠️ Esta rota já foi adicionada');
+                return;
+            }
+
+            rotasPreferidas.push(rota);
+            atualizarListaRotas();
+
+            // Limpar campos
+            document.getElementById('estadoOrigem').value = '';
+            document.getElementById('cidadeOrigem').value = '';
+            document.getElementById('estadoDestino').value = '';
+            document.getElementById('cidadeDestino').value = '';
+        }
+
+        function removerRota(index) {
+            rotasPreferidas.splice(index, 1);
+            atualizarListaRotas();
+        }
+
+        function atualizarListaRotas() {
+            const lista = document.getElementById('listaRotas');
+            if (rotasPreferidas.length === 0) {
+                lista.innerHTML = '';
+                return;
+            }
+
+            lista.innerHTML = rotasPreferidas.map((rota, index) => `
+                <div class="rota-item">
+                    <span class="rota-texto">⭐ ${rota}</span>
+                    <button class="btn-remover-rota" onclick="removerRota(${index})">❌ Remover</button>
+                </div>
+            `).join('');
+        }
+
+        // Banco de Fretes
+        const fretesDisponiveis = [
+            {id: 1, origem: 'Curitiba - PR', destino: 'São Paulo - SP', km: 408, valorSugerido: 2850, tipoVeiculo: 'Carreta', carga: 'Madeira beneficiada', peso: '25 toneladas', urgente: true, embarque: 'Hoje'},
+            {id: 2, origem: 'Tubarão - SC', destino: 'Rio de Janeiro - RJ', km: 920, valorSugerido: 5200, tipoVeiculo: 'Carreta', carga: 'Compensados', peso: '28 toneladas', urgente: true, embarque: 'Amanhã'},
+            {id: 3, origem: 'São Paulo - SP', destino: 'Belo Horizonte - MG', km: 586, valorSugerido: 3400, tipoVeiculo: 'Truck', carga: 'MDF', peso: '15 toneladas', urgente: false, embarque: '15/11'},
+            {id: 4, origem: 'Porto Alegre - RS', destino: 'Curitiba - PR', km: 711, valorSugerido: 4100, tipoVeiculo: 'Carreta', carga: 'Painéis de madeira', peso: '26 toneladas', urgente: true, embarque: 'Hoje'},
+            {id: 5, origem: 'Curitiba - PR', destino: 'Florianópolis - SC', km: 300, valorSugerido: 2200, tipoVeiculo: 'Truck', carga: 'Madeira serrada', peso: '18 toneladas', urgente: false, embarque: '16/11'},
+            {id: 6, origem: 'Joinville - SC', destino: 'São Paulo - SP', km: 550, valorSugerido: 3600, tipoVeiculo: 'Carreta', carga: 'Compensados especiais', peso: '24 toneladas', urgente: true, embarque: 'Amanhã'},
+            {id: 7, origem: 'São Paulo - SP', destino: 'Curitiba - PR', km: 408, valorSugerido: 2750, tipoVeiculo: 'Bitruck', carga: 'MDF e HDF', peso: '20 toneladas', urgente: false, embarque: '17/11'},
+            {id: 8, origem: 'Belo Horizonte - MG', destino: 'Rio de Janeiro - RJ', km: 434, valorSugerido: 2950, tipoVeiculo: 'Truck', carga: 'Madeira tratada', peso: '16 toneladas', urgente: false, embarque: '18/11'},
+            {id: 9, origem: 'Tubarão - SC', destino: 'Porto Alegre - RS', km: 456, valorSugerido: 3100, tipoVeiculo: 'Carreta', carga: 'Painéis compensados', peso: '27 toneladas', urgente: true, embarque: 'Hoje'},
+            {id: 10, origem: 'Rio de Janeiro - RJ', destino: 'São Paulo - SP', km: 429, valorSugerido: 2900, tipoVeiculo: 'Truck', carga: 'Madeira beneficiada', peso: '17 toneladas', urgente: false, embarque: '19/11'}
+        ];
+
+        // Renderizar Fretes
+        function renderizarFretes() {
+            const grid = document.getElementById('gridFretes');
+            grid.innerHTML = fretesDisponiveis.map(frete => `
+                <div class="card-frete ${frete.urgente ? 'urgente' : ''}">
+                    <div class="frete-header">
+                        <div class="frete-rota">${frete.origem} → ${frete.destino}</div>
+                        ${frete.urgente ? '<div class="badge-urgente">🔥 URGENTE</div>' : ''}
+                    </div>
+
+                    <div class="frete-detalhes">
+                        <div class="detalhe-item">
+                            <div class="detalhe-label">Distância</div>
+                            <div class="detalhe-valor">${frete.km} km</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="detalhe-label">Valor Sugerido</div>
+                            <div class="detalhe-valor detalhe-destaque">R$ ${frete.valorSugerido.toLocaleString('pt-BR')}</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="detalhe-label">Tipo Veículo</div>
+                            <div class="detalhe-valor">${frete.tipoVeiculo}</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="detalhe-label">Carga</div>
+                            <div class="detalhe-valor">${frete.carga}</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="detalhe-label">Peso</div>
+                            <div class="detalhe-valor">${frete.peso}</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="detalhe-label">Embarque</div>
+                            <div class="detalhe-valor">${frete.embarque}</div>
+                        </div>
+                    </div>
+
+                    <div class="form-proposta">
+                        <div class="form-proposta-titulo">💰 FAÇA SUA PROPOSTA PARA ESTE FRETE</div>
+                        <div class="grid-form-proposta">
+                            <div class="form-group">
+                                <label>Seu Valor (R$)</label>
+                                <input type="number" id="valor_${frete.id}" placeholder="2500" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Prazo Entrega</label>
+                                <input type="text" id="prazo_${frete.id}" placeholder="24 horas" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Placa Veículo</label>
+                                <input type="text" id="placa_${frete.id}" placeholder="ABC-1234" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Disponibilidade</label>
+                                <select id="disponibilidade_${frete.id}">
+                                    <option value="Imediata">Imediata</option>
+                                    <option value="Até 24h">Até 24h</option>
+                                    <option value="Até 48h">Até 48h</option>
+                                    <option value="Até 7 dias">Até 7 dias</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Observações</label>
+                            <input type="text" id="obs_${frete.id}" placeholder="Informações adicionais (opcional)">
+                        </div>
+                        <button class="btn-enviar-proposta" onclick="enviarProposta(${frete.id}, '${frete.origem}', '${frete.destino}', ${frete.valorSugerido})">
+                            🔥 ENVIAR PROPOSTA AGORA
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Enviar Proposta
+        function enviarProposta(freteId, origem, destino, valorSugerido) {
+            const valorProposta = document.getElementById(`valor_${freteId}`).value;
+            const prazo = document.getElementById(`prazo_${freteId}`).value;
+            const placa = document.getElementById(`placa_${freteId}`).value;
+            const disponibilidade = document.getElementById(`disponibilidade_${freteId}`).value;
+            const obs = document.getElementById(`obs_${freteId}`).value;
+
+            if (!valorProposta || !prazo || !placa) {
+                alert('❌ Preencha todos os campos obrigatórios da proposta');
+                return;
+            }
+
+            // Validar placa
+            const regexPlaca = /^[A-Z]{3}-\d{4}$/;
+            if (!regexPlaca.test(placa.toUpperCase())) {
+                alert('❌ Placa inválida! Use o formato: ABC-1234');
+                return;
+            }
+
+            // Dados completos
+            const propostaData = {
+                ...leadData,
+                rotasPreferidas: rotasPreferidas,
+                freteId: freteId,
+                cidadeOrigem: origem.split(' - ')[0],
+                estadoOrigem: origem.split(' - ')[1],
+                cidadeDestino: destino.split(' - ')[0],
+                estadoDestino: destino.split(' - ')[1],
+                valorSugerido: valorSugerido,
+                valorProposta: valorProposta,
+                prazoEntrega: prazo,
+                placaVeiculo: placa.toUpperCase(),
+                disponibilidade: disponibilidade,
+                observacoes: obs
+            };
+
+            // Salvar localStorage
+            localStorage.setItem('propostaData', JSON.stringify(propostaData));
+
+            // Enviar para Google Sheets
+            const dados = {
+                tipo: 'proposta',
+                ...propostaData
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(dados)
+            })
+            .then(() => {
+                console.log('✅ Proposta enviada para Google Sheets');
+            })
+            .catch(error => {
+                console.error('⚠️ Erro ao enviar:', error);
+            });
+
+            // Redirecionar para Página 3
+            window.location.href = '3-confirmacao.html';
+        }
+
+        // Inicializar
+        renderizarFretes();
+    </script>
+</body>
+</html>
